@@ -149,8 +149,8 @@ export function MemberSignup() {
           />
           <Button onClick={handleEmailCheck}>중복체크</Button>
         </Flex>
+        <FormErrorMessage>email 중복 체크를 해주세요.</FormErrorMessage>
       </FormControl>
-      <FormErrorMessage>email 중복 체크를 해주세요.</FormErrorMessage>
       <Button
         isDisabled={!submitAvailable}
         onClick={handleSubmit}
