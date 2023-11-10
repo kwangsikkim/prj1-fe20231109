@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export function MemberSignup() {
   const [id, setId] = useState("");
@@ -20,6 +21,7 @@ export function MemberSignup() {
   const [emailAvailable, setEmailAvailable] = useState(false);
 
   const toast = useToast();
+  const navigate = useNavigate();
 
   let submitAvailable = true;
 
@@ -46,9 +48,29 @@ export function MemberSignup() {
         password,
         email,
       })
-      .then(() => console.log("잘됨"))
-      .catch(() => console.log("안됨"))
-      .finally(() => console.log("끝"));
+      .then(() => {
+        // toast
+        // navigate
+        toast({
+          description: "회원가입 완료",
+          status: "success",
+        });
+        navigate("/");
+      })
+      .catch((error) => {
+        // toast
+        if (error.response.status === 400) {
+          toast({
+            description: "입력 값을 확인해주세요.",
+            status: "error",
+          });
+        } else {
+          toast({
+            description: "회원가입 중 오류가 발생했습니다.",
+            status: "error",
+          });
+        }
+      });
   }
 
   function handleIdCheck() {
