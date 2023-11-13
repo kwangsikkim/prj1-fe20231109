@@ -81,7 +81,7 @@ export function MemberEdit() {
   }
 
   function handleSubmit() {
-    // PUT  /api/member/edit
+    // put /api/member/edit
     // {id, password, email}
 
     axios.put("/api/member/edit", { id: member.id, password, email });
@@ -130,7 +130,7 @@ export function MemberEdit() {
       </FormControl>
       <Button
         isDisabled={!emailChecked || !passwordChecked}
-        colorScheme="telegram"
+        colorScheme="blue"
         onClick={handleSubmit}
       >
         수정
