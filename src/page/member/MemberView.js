@@ -80,6 +80,12 @@ export function MemberView() {
         <FormLabel>password</FormLabel>
         <Input type="text" value={member.password} readOnly />
       </FormControl>
+
+      <FormControl>
+        <FormLabel>nickName</FormLabel>
+        <Input value={member.nickName} readOnly />
+      </FormControl>
+
       <FormControl>
         <FormLabel>email</FormLabel>
         <Input value={member.email} readOnly />
