@@ -1,12 +1,26 @@
-import { Button, Flex } from "@chakra-ui/react";
+import { Button, Flex, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useContext } from "react";
+import { LoginContext } from "../App";
 
 export function NavBar() {
+  const toast = useToast();
+  const { fetchLogin, login, isAuthenticated } = useContext(LoginContext);
+
   const navigate = useNavigate();
 
   function handleLogout() {
-    axios.post("/api/member/logout").then(() => console.log("로그아웃 성공"));
+    axios
+      .post("/api/member/logout")
+      .then(() => {
+        toast({
+          description: "로그아웃 되었습니다",
+          status: "info",
+        });
+        navigate("/");
+      })
+      .finally(() => fetchLogin());
   }
 
   return (
