@@ -23,7 +23,7 @@ const routes = createBrowserRouter(
       <Route index element={<BoardList />} />
       <Route path="write" element={<BoardWrite />} />
       <Route path="board/:id" element={<BoardView />} />
-      <Route path="edit/:id" element={<BoardEdit />} />
+      <Route path="edit/:id" element={<BoardEdit />}></Route>
       <Route path="signup" element={<MemberSignup />} />
       <Route path="member/list" element={<MemberList />} />
       <Route path="member" element={<MemberView />} />
@@ -33,16 +33,17 @@ const routes = createBrowserRouter(
   ),
 );
 
-export const LoginContext = createContext("");
+export const LoginContext = createContext(null);
 
 function App(props) {
-  const [login, setLogin] = useState(null);
+  const [login, setLogin] = useState("");
 
   useEffect(() => {
     fetchLogin();
   }, []);
 
   console.log(login);
+
   function fetchLogin() {
     axios.get("/api/member/login").then((response) => setLogin(response.data));
   }
@@ -51,15 +52,31 @@ function App(props) {
     return login !== "";
   }
 
+  function isAdmin() {
+    if (login.auth) {
+      return login.auth.some((elem) => elem.name === "admin");
+    }
+
+    return false;
+  }
+
+  // function isManager() {
+  //   return login.auth.some((elem) => elem.name === "manager");
+  // }
+  //
+  // function hasAuth(auth) {
+  //   return login.auth.some((elem) => elem.name === auth);
+  // }
+
   function hasAccess(userId) {
     return login.id === userId;
   }
 
   return (
     <LoginContext.Provider
-      value={{ login, fetchLogin, isAuthenticated, hasAccess }}
+      value={{ login, fetchLogin, isAuthenticated, hasAccess, isAdmin }}
     >
-      <RouterProvider router={routes} />;
+      <RouterProvider router={routes} />
     </LoginContext.Provider>
   );
 }

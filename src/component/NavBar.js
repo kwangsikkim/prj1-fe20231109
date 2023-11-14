@@ -5,8 +5,9 @@ import { useContext } from "react";
 import { LoginContext } from "../App";
 
 export function NavBar() {
+  const { fetchLogin, login, isAuthenticated, isAdmin } =
+    useContext(LoginContext);
   const toast = useToast();
-  const { fetchLogin, login, isAuthenticated } = useContext(LoginContext);
 
   const navigate = useNavigate();
 
@@ -15,7 +16,7 @@ export function NavBar() {
       .post("/api/member/logout")
       .then(() => {
         toast({
-          description: "로그아웃 되었습니다",
+          description: "로그아웃 되었습니다.",
           status: "info",
         });
         navigate("/");
@@ -32,7 +33,7 @@ export function NavBar() {
       {isAuthenticated() || (
         <Button onClick={() => navigate("/signup")}>signup</Button>
       )}
-      {isAuthenticated() && (
+      {isAdmin() && (
         <Button onClick={() => navigate("/member/list")}>회원목록</Button>
       )}
       {isAuthenticated() || (
