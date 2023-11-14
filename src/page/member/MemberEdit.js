@@ -178,7 +178,6 @@ export function MemberEdit() {
             onChange={(e) => setPasswordCheck(e.target.value)}
           />
         </FormControl>
-
       )}
 
       <FormControl>
