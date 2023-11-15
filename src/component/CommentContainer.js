@@ -14,14 +14,11 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-function CommentForm({ boardId }) {
+function CommentForm({ boardId, isSubmitting, onSubmit }) {
   const [comment, setComment] = useState("");
 
   function handleSubmit() {
-    axios.post("/api/comment/add", {
-      boardId,
-      comment,
-    });
+    onSubmit({ boardId, comment });
   }
 
   return (
@@ -70,9 +67,23 @@ function CommentList({ boardId }) {
 }
 
 export function CommentContainer({ boardId }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function handleSubmit(comment) {
+    setIsSubmitting(true);
+
+    axios
+      .post("/api/comment/add", comment)
+      .finally(() => setIsSubmitting(false));
+  }
+
   return (
     <Box>
-      <CommentForm boardId={boardId} />
+      <CommentForm
+        boardId={boardId}
+        isSubmitting={isSubmitting}
+        onSubmit={handleSubmit}
+      />
       <CommentList boardId={boardId} />
     </Box>
   );
