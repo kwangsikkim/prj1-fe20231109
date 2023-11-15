@@ -179,7 +179,7 @@ export function CommentContainer({ boardId }) {
         onDeleteModalOpen={handleDeleteModalOpen}
       />
 
-      {/* 삭제 모달 */}
+      {/*  삭제 모달  */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
