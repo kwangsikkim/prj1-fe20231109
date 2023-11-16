@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { CloseIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import { DeleteIcon, EditIcon, NotAllowedIcon } from "@chakra-ui/icons";
 import { LoginContext } from "./LogInProvider";
 
 function CommentForm({ boardId, isSubmitting, onSubmit }) {
@@ -42,18 +42,51 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
   );
 }
 
-function CommentItem({ comment, onDeleteModalOpen }) {
+function CommentItem({
+  comment,
+  onDeleteModalOpen,
+  setIsSubmitting,
+  isSubmitting,
+}) {
   const [isEditing, setIsEditing] = useState(false);
   const [commentEdited, setCommentEdited] = useState(comment.comment);
 
   const { hasAccess } = useContext(LoginContext);
 
+  const toast = useToast();
+
   function handleSubmit() {
+    // TODO : 응답 코드에 따른 기능들
+
+    setIsSubmitting(true);
+
     axios
       .put("/api/comment/edit", { id: comment.id, comment: commentEdited })
-      .then(() => console.log("good"))
-      .catch(() => console.log("bad"))
-      .finally(() => console.log("done"));
+      .then(() => {
+        toast({
+          description: "댓글이 수정되었습니다.",
+          status: "success",
+        });
+      })
+      .catch((error) => {
+        if (error.response.status === 401 || error.response.status === 403) {
+          toast({
+            description: "권한이 없습니다.",
+            status: "warning",
+          });
+        }
+
+        if (error.response.status === 400) {
+          toast({
+            description: "입력값을 확인해주세요.",
+            status: "warning",
+          });
+        }
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+        setIsEditing(false);
+      });
   }
 
   return (
@@ -73,7 +106,11 @@ function CommentItem({ comment, onDeleteModalOpen }) {
                 value={commentEdited}
                 onChange={(e) => setCommentEdited(e.target.value)}
               />
-              <Button colorScheme="blue" onClick={handleSubmit}>
+              <Button
+                isDisabled={isSubmitting}
+                colorScheme="blue"
+                onClick={handleSubmit}
+              >
                 저장
               </Button>
             </Box>
@@ -84,23 +121,22 @@ function CommentItem({ comment, onDeleteModalOpen }) {
           <Box>
             {isEditing || (
               <Button
-                onClick={() => setIsEditing(true)}
                 size="xs"
                 colorScheme="purple"
+                onClick={() => setIsEditing(true)}
               >
                 <EditIcon />
               </Button>
             )}
             {isEditing && (
               <Button
-                onClick={() => setIsEditing(false)}
                 size="xs"
                 colorScheme="gray"
+                onClick={() => setIsEditing(false)}
               >
-                <CloseIcon />
+                <NotAllowedIcon />
               </Button>
             )}
-
             <Button
               onClick={() => onDeleteModalOpen(comment.id)}
               size="xs"
@@ -115,7 +151,12 @@ function CommentItem({ comment, onDeleteModalOpen }) {
   );
 }
 
-function CommentList({ commentList, onDeleteModalOpen, isSubmitting }) {
+function CommentList({
+  commentList,
+  onDeleteModalOpen,
+  isSubmitting,
+  setIsSubmitting,
+}) {
   const { hasAccess } = useContext(LoginContext);
 
   return (
@@ -128,6 +169,8 @@ function CommentList({ commentList, onDeleteModalOpen, isSubmitting }) {
           {commentList.map((comment) => (
             <CommentItem
               key={comment.id}
+              isSubmitting={isSubmitting}
+              setIsSubmitting={setIsSubmitting}
               comment={comment}
               onDeleteModalOpen={onDeleteModalOpen}
             />
@@ -219,7 +262,6 @@ export function CommentContainer({ boardId }) {
     // 모달 열기
     onOpen();
   }
-
   return (
     <Box>
       {isAuthenticated() && (
@@ -232,11 +274,12 @@ export function CommentContainer({ boardId }) {
       <CommentList
         boardId={boardId}
         isSubmitting={isSubmitting}
+        setIsSubmitting={setIsSubmitting}
         commentList={commentList}
         onDeleteModalOpen={handleDeleteModalOpen}
       />
 
-      {/*  삭제 모달  */}
+      {/* 삭제 모달 */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
