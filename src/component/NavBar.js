@@ -6,7 +6,8 @@ import { LoginContext } from "./LogInProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 import {
-  faHouse, faPen,
+  faHouse,
+  faPen,
   faRightToBracket,
   faUser,
   faUserPlus,
@@ -40,7 +41,6 @@ export function NavBar() {
       navigate("/");
     });
   }
-
 
   return (
     <Flex>
@@ -78,9 +78,12 @@ export function NavBar() {
           로그인
         </Button>
       )}
-      {isAuthenticated() && <Button onClick={handleLogout}>
-        <FontAwesomeIcon icon={faRightToBracket} />
-        로그아웃</Button>}
+      {isAuthenticated() && (
+        <Button onClick={handleLogout}>
+          <FontAwesomeIcon icon={faRightToBracket} />
+          로그아웃
+        </Button>
+      )}
     </Flex>
   );
 }
