@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { DeleteIcon } from "@chakra-ui/icons";
+import { CloseIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { LoginContext } from "./LogInProvider";
 
 function CommentForm({ boardId, isSubmitting, onSubmit }) {
@@ -43,6 +43,9 @@ function CommentForm({ boardId, isSubmitting, onSubmit }) {
 }
 
 function CommentItem({ comment, onDeleteModalOpen }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [commentEdited, setCommentEdited] = useState(comment.comment);
+
   const { hasAccess } = useContext(LoginContext);
 
   return (
@@ -52,18 +55,47 @@ function CommentItem({ comment, onDeleteModalOpen }) {
         <Text fontSize="xs">{comment.inserted}</Text>
       </Flex>
       <Flex justifyContent="space-between" alignItems="center">
-        <Text sx={{ whiteSpace: "pre-wrap" }} pt="2" fontSize="sm">
-          {comment.comment}
-        </Text>
+        <Box flex={1}>
+          <Text sx={{ whiteSpace: "pre-wrap" }} pt="2" fontSize="sm">
+            {comment.comment}
+          </Text>
+          {isEditing && (
+            <Textarea
+              value={commentEdited}
+              onChange={(e) => setCommentEdited(e.target.value)}
+            />
+          )}
+        </Box>
 
         {hasAccess(comment.memberId) && (
-          <Button
-            onClick={() => onDeleteModalOpen(comment.id)}
-            size="xs"
-            colorScheme="red"
-          >
-            <DeleteIcon />
-          </Button>
+          <Box>
+            {isEditing || (
+              <Button
+                onClick={() => setIsEditing(true)}
+                size="xs"
+                colorScheme="purple"
+              >
+                <EditIcon />
+              </Button>
+            )}
+            {isEditing && (
+              <Button
+                onClick={() => setIsEditing(false)}
+                size="xs"
+                colorScheme="gray"
+              >
+                <CloseIcon />
+              </Button>
+            )}
+
+            <Button
+              onClick={() => onDeleteModalOpen(comment.id)}
+              size="xs"
+              colorScheme="red"
+            >
+              <DeleteIcon />
+            </Button>
+          </Box>
         )}
       </Flex>
     </Box>
