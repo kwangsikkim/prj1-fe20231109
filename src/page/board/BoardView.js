@@ -17,6 +17,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
+  Text,
   Textarea,
   useDisclosure,
   useToast,
@@ -25,9 +26,26 @@ import { LoginContext } from "../../component/LogInProvider";
 import { CommentContainer } from "../../component/CommentContainer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import * as PropTypes from "prop-types";
+
+function LikeContainer({ like, onClick }) {
+  if (like === null) {
+    return <Spinner />;
+  }
+
+  return (
+    <Button variant="ghost" size="xl" onClick={onClick}>
+      {/*<FontAwesomeIcon icon={faHeart} size="xl" />*/}
+      {like.like && <Text>꽉찬 하트</Text>}
+      {like.like || <Text>빈 하트</Text>}
+      <Text>{like.countLike}</Text>
+    </Button>
+  );
+}
 
 export function BoardView() {
   const [board, setBoard] = useState(null);
+  const [like, setLike] = useState(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -42,6 +60,13 @@ export function BoardView() {
     axios
       .get("/api/board/id/" + id)
       .then((response) => setBoard(response.data));
+  }, []);
+
+  // like 정보 받아오는 useEffect
+  useEffect(() => {
+    axios
+      .get("/api/like/board/" + id)
+      .then((response) => setLike(response.data));
   }, []);
 
   if (board === null) {
@@ -70,7 +95,7 @@ export function BoardView() {
   function handleLike() {
     axios
       .post("/api/like", { boardId: board.id })
-      .then(() => console.log("good"))
+      .then((response) => setLike(response.data))
       .catch(() => console.log("bad"))
       .finally(() => console.log("done"));
   }
@@ -79,9 +104,7 @@ export function BoardView() {
     <Box>
       <Flex justifyContent="space-between">
         <Heading size="xl">{board.id}번 글 보기</Heading>
-        <Button variant="ghost" size="xl" onClick={handleLike}>
-          <FontAwesomeIcon icon={faHeart} size="xl" />
-        </Button>
+        <LikeContainer like={like} onClick={handleLike} />
       </Flex>
       <FormControl>
         <FormLabel>제목</FormLabel>
