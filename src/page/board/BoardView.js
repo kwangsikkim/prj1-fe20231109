@@ -17,7 +17,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
-  Text,
   Textarea,
   Tooltip,
   useDisclosure,
@@ -26,9 +25,8 @@ import {
 import { LoginContext } from "../../component/LogInProvider";
 import { CommentContainer } from "../../component/CommentContainer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart as fullHeart } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as emptyHeart } from "@fortawesome/free-regular-svg-icons";
-import * as PropTypes from "prop-types";
+import { faHeart as fullHeart } from "@fortawesome/free-solid-svg-icons";
 
 function LikeContainer({ like, onClick }) {
   const { isAuthenticated } = useContext(LoginContext);
@@ -40,7 +38,7 @@ function LikeContainer({ like, onClick }) {
   return (
     <Flex gap={2}>
       <Tooltip isDisabled={isAuthenticated()} hasArrow label={"로그인 하세요."}>
-        <Button variant="ghost" size="xl" onClick={onClick} colorScheme="red">
+        <Button variant="ghost" size="xl" onClick={onClick}>
           {like.like && <FontAwesomeIcon icon={fullHeart} size="xl" />}
           {like.like || <FontAwesomeIcon icon={emptyHeart} size="xl" />}
         </Button>
@@ -55,7 +53,6 @@ export function BoardView() {
   const [like, setLike] = useState(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -69,7 +66,6 @@ export function BoardView() {
       .then((response) => setBoard(response.data));
   }, []);
 
-  // like 정보 받아오는 useEffect
   useEffect(() => {
     axios
       .get("/api/like/board/" + id)
@@ -96,7 +92,7 @@ export function BoardView() {
           status: "error",
         });
       })
-      .finally(() => onClose);
+      .finally(() => onClose());
   }
 
   function handleLike() {
@@ -141,7 +137,7 @@ export function BoardView() {
         </Box>
       )}
 
-      {/*  삭제 모달 */}
+      {/* 삭제 모달 */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

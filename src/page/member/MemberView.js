@@ -36,7 +36,7 @@ export function MemberView() {
       .catch((error) => {
         navigate("/login");
         toast({
-          description: "권한이 없습니다",
+          description: "권한이 없습니다.",
           status: "warning",
         });
       });
@@ -61,8 +61,6 @@ export function MemberView() {
           status: "success",
         });
         navigate("/");
-
-        // TODO : 로그아웃 기능 추가하기
       })
       .catch((error) => {
         if (error.response.status === 401 || error.response.status === 403) {
@@ -87,12 +85,10 @@ export function MemberView() {
         <FormLabel>password</FormLabel>
         <Input type="text" value={member.password} readOnly />
       </FormControl>
-
       <FormControl>
-        <FormLabel>nickName</FormLabel>
-        <Input value={member.nickName} readOnly />
+        <FormLabel>별명</FormLabel>
+        <Input value={member.nickName} readOnly></Input>
       </FormControl>
-
       <FormControl>
         <FormLabel>email</FormLabel>
         <Input value={member.email} readOnly />

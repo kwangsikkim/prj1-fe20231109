@@ -4,10 +4,10 @@ import axios from "axios";
 import { useContext, useEffect } from "react";
 import { LoginContext } from "./LogInProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 import {
   faHouse,
   faPen,
+  faRightFromBracket,
   faRightToBracket,
   faUser,
   faUserPlus,
@@ -22,6 +22,7 @@ export function NavBar() {
   const navigate = useNavigate();
 
   const urlParams = new URLSearchParams();
+
   const location = useLocation();
 
   useEffect(() => {
@@ -80,7 +81,7 @@ export function NavBar() {
       )}
       {isAuthenticated() && (
         <Button onClick={handleLogout}>
-          <FontAwesomeIcon icon={faRightToBracket} />
+          <FontAwesomeIcon icon={faRightFromBracket} />
           로그아웃
         </Button>
       )}
