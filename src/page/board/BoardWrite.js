@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   FormControl,
+  FormHelperText,
   FormLabel,
   Input,
   Textarea,
@@ -14,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 export function BoardWrite() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [files, setFiles] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toast = useToast();
@@ -22,9 +24,10 @@ export function BoardWrite() {
   function handleSubmit() {
     setIsSubmitting(true);
     axios
-      .post("/api/board/add", {
+      .postForm("/api/board/add", {
         title,
         content,
+        files,
       })
       .then(() => {
         toast({
@@ -64,6 +67,18 @@ export function BoardWrite() {
             value={content}
             onChange={(e) => setContent(e.target.value)}
           ></Textarea>
+        </FormControl>
+        <FormControl>
+          <FormLabel>이미지</FormLabel>
+          <Input
+            type="file"
+            accept="iamge/*"
+            multiple
+            onChange={(e) => setFiles(e.target.files)}
+          />
+          <FormHelperText>
+            한 개 파일은 1MB 이내, 총 욜량은 10MB이내로 첨부하세요.
+          </FormHelperText>
         </FormControl>
 
         <Button
