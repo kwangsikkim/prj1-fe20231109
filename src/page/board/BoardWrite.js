@@ -104,3 +104,4 @@ export function BoardWrite() {
     </Center>
   );
 }
+//commit and push 용
