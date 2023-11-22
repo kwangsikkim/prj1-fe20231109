@@ -3,7 +3,9 @@ import {
   Badge,
   Box,
   Button,
+  Center,
   Flex,
+  Heading,
   Input,
   Select,
   Spinner,
@@ -52,31 +54,33 @@ function Pagination({ pageInfo }) {
   }
 
   return (
-    <Box>
-      {pageInfo.prevPageNumber && (
-        <PageButton variant="ghost" pageNumber={pageInfo.prevPageNumber}>
-          <FontAwesomeIcon icon={faAngleLeft} />
-        </PageButton>
-      )}
+    <Center mt={5} mb={40}>
+      <Box>
+        {pageInfo.prevPageNumber && (
+          <PageButton variant="ghost" pageNumber={pageInfo.prevPageNumber}>
+            <FontAwesomeIcon icon={faAngleLeft} />
+          </PageButton>
+        )}
 
-      {pageNumbers.map((pageNumber) => (
-        <PageButton
-          key={pageNumber}
-          variant={
-            pageNumber === pageInfo.currentPageNumber ? "solid" : "ghost"
-          }
-          pageNumber={pageNumber}
-        >
-          {pageNumber}
-        </PageButton>
-      ))}
+        {pageNumbers.map((pageNumber) => (
+          <PageButton
+            key={pageNumber}
+            variant={
+              pageNumber === pageInfo.currentPageNumber ? "solid" : "ghost"
+            }
+            pageNumber={pageNumber}
+          >
+            {pageNumber}
+          </PageButton>
+        ))}
 
-      {pageInfo.nextPageNumber && (
-        <PageButton variant="ghost" pageNumber={pageInfo.nextPageNumber}>
-          <FontAwesomeIcon icon={faAngleRight} />
-        </PageButton>
-      )}
-    </Box>
+        {pageInfo.nextPageNumber && (
+          <PageButton variant="ghost" pageNumber={pageInfo.nextPageNumber}>
+            <FontAwesomeIcon icon={faAngleRight} />
+          </PageButton>
+        )}
+      </Box>
+    </Center>
   );
 }
 
@@ -96,10 +100,8 @@ function SearchComponent() {
 
   return (
     <Flex>
-      <Select onChange={(e) => setCategory(e.target.value)}>
-        <option selected value="all">
-          전체
-        </option>
+      <Select defaultValue="all" onChange={(e) => setCategory(e.target.value)}>
+        <option value="all">전체</option>
         <option value="title">제목</option>
         <option value="content">본문</option>
       </Select>
@@ -130,18 +132,18 @@ export function BoardList() {
 
   return (
     <Box>
-      <h1>게시물 목록</h1>
+      <Heading>게시물 목록</Heading>
       <Box>
         <Table>
           <Thead>
             <Tr>
-              <Th>id</Th>
-              <Th>
+              <Th w={"100px"}>id</Th>
+              <Th w={"70px"}>
                 <FontAwesomeIcon icon={faHeart} />
               </Th>
               <Th>title</Th>
-              <Th>by</Th>
-              <Th>at</Th>
+              <Th w={"150px"}>by</Th>
+              <Th w={"150px"}>at</Th>
             </Tr>
           </Thead>
           <Tbody>
