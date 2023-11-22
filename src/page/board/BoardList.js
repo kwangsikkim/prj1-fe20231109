@@ -100,7 +100,7 @@ function SearchComponent() {
   }
 
   return (
-    <Center>
+    <Center mt={5}>
       <Flex gap={1}>
         <Box>
           <Select
@@ -145,7 +145,7 @@ export function BoardList() {
   return (
     <Box>
       <Heading>게시물 목록</Heading>
-      <Box mt={5}>
+      <Box>
         <Table>
           <Thead>
             <Tr>
