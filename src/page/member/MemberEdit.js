@@ -4,10 +4,16 @@ import axios from "axios";
 import {
   Box,
   Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Center,
   Flex,
   FormControl,
   FormHelperText,
   FormLabel,
+  Heading,
   Input,
   Modal,
   ModalBody,
@@ -25,21 +31,22 @@ export function MemberEdit() {
   const [member, setMember] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [nickName, setNickName] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [emailAvailable, setEmailAvailable] = useState(false);
+  const [nickName, setNickName] = useState("");
   const [nickNameAvailable, setNickNameAvailable] = useState(false);
 
   const toast = useToast();
   const [params] = useSearchParams();
 
-  const { isOpen, onClose, onOpen } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
   useEffect(() => {
     axios.get("/api/member?" + params.toString()).then((response) => {
       setMember(response.data);
       setEmail(response.data.email);
+      setNickName(response.data.nickName);
     });
   }, []);
 
@@ -54,9 +61,8 @@ export function MemberEdit() {
 
   let emailChecked = sameOriginEmail || emailAvailable;
 
-  // 기존 닉네임과 같은지?
+  // 기존 별명과 같은지?
   let sameOriginNickName = false;
-
   if (member !== null) {
     sameOriginNickName = member.nickName === nickName;
   }
@@ -103,39 +109,15 @@ export function MemberEdit() {
       });
   }
 
-  function handleNickNameCheck() {
-    const params = new URLSearchParams();
-    params.set("nickName", nickName);
-
-    axios
-      .get("/api/member/check?" + params)
-      .then(() => {
-        setNickNameAvailable(false);
-        toast({
-          description: "이미 사용 중인 닉네임입니다.",
-          status: "warning",
-        });
-      })
-      .catch((error) => {
-        if (error.response.status === 404) {
-          setNickNameAvailable(true);
-          toast({
-            description: "사용 가능한 닉네임입니다.",
-            status: "success",
-          });
-        }
-      });
-  }
-
   function handleSubmit() {
     // put /api/member/edit
-    // {id, password, email}
+    // {id, password, email, nickName}
 
     axios
       .put("/api/member/edit", { id: member.id, password, email, nickName })
       .then(() => {
         toast({
-          description: "회원 정보가 수정되었습니다.",
+          description: "회원정보가 수정되었습니다.",
           status: "success",
         });
         navigate("/member?" + params.toString());
@@ -148,7 +130,7 @@ export function MemberEdit() {
           });
         } else {
           toast({
-            description: "수정 중에 문제가 발생하였습니다.",
+            description: "수정중에 문제가 발생하였습니다.",
             status: "error",
           });
         }
@@ -156,72 +138,109 @@ export function MemberEdit() {
       .finally(() => onClose());
   }
 
+  function handleNickNameCheck() {
+    const params = new URLSearchParams();
+    params.set("nickName", nickName);
+
+    axios
+      .get("/api/member/check?" + params)
+      .then(() => {
+        setNickNameAvailable(false);
+        toast({
+          description: "이미 사용 중인 별명입니다.",
+          status: "warning",
+        });
+      })
+      .catch((error) => {
+        if (error.response.status === 404) {
+          setNickNameAvailable(true);
+          toast({
+            description: "사용 가능한 별명입니다.",
+            status: "success",
+          });
+        }
+      });
+  }
+
   return (
-    <Box>
-      <h1>{id}님 정보 수정</h1>
-      <FormControl>
-        <FormLabel>password</FormLabel>
-        <Input
-          type="text"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <FormHelperText>작성하지 않으면 기존 암호를 유지합니다.</FormHelperText>
-      </FormControl>
+    <Center>
+      <Card w={"lg"}>
+        <CardHeader>
+          <Heading>{id}님 정보 수정</Heading>
+        </CardHeader>
+        <CardBody>
+          <FormControl mb={2}>
+            <FormLabel>password</FormLabel>
+            <Input
+              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <FormHelperText>
+              작성하지 않으면 기존 암호를 유지합니다.
+            </FormHelperText>
+          </FormControl>
 
-      {password.length > 0 && (
-        <FormControl>
-          <FormLabel>password 확인</FormLabel>
-          <Input
-            type="text"
-            value={passwordCheck}
-            onChange={(e) => setPasswordCheck(e.target.value)}
-          />
-        </FormControl>
-      )}
+          {password.length > 0 && (
+            <FormControl mb={2}>
+              <FormLabel>password 확인</FormLabel>
+              <Input
+                type="text"
+                value={passwordCheck}
+                onChange={(e) => setPasswordCheck(e.target.value)}
+              />
+            </FormControl>
+          )}
 
-      <FormControl>
-        <FormLabel>nickName</FormLabel>
-        <Flex>
-          <Input
-            type="text"
-            value={nickName}
-            onChange={(e) => {
-              setNickName(e.target.value);
-              setNickNameAvailable(false);
-            }}
-          />
-          <Button isDisabled={nickNameChecked} onClick={handleNickNameCheck}>
-            중복확인
+          <FormControl mb={2}>
+            <FormLabel>nickName</FormLabel>
+            <Flex gap={2}>
+              <Input
+                type="text"
+                value={nickName}
+                onChange={(e) => {
+                  setNickName(e.target.value);
+                  setNickNameAvailable(false);
+                }}
+              ></Input>
+              <Button
+                isDisabled={nickNameChecked}
+                onClick={handleNickNameCheck}
+              >
+                중복확인
+              </Button>
+            </Flex>
+          </FormControl>
+
+          {/*  email을 변경하면(작성시작) 중복확인 다시 하도록  */}
+          {/*  기존 email과 같으면 중복확인 안해도됨 */}
+          <FormControl mb={2}>
+            <FormLabel>email</FormLabel>
+            <Flex gap={2}>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailAvailable(false);
+                }}
+              />
+              <Button isDisabled={emailChecked} onClick={handleEmailCheck}>
+                중복확인
+              </Button>
+            </Flex>
+          </FormControl>
+        </CardBody>
+        <CardFooter>
+          <Button
+            isDisabled={!emailChecked || !passwordChecked || !nickNameChecked}
+            colorScheme="blue"
+            onClick={onOpen}
+          >
+            수정
           </Button>
-        </Flex>
-      </FormControl>
-
-      {/*  email을 변경하면(작성시작) 중복확인 다시 하도록  */}
-      {/*  기존 email과 같으면 중복확인 안해도됨 */}
-      <FormControl>
-        <FormLabel>email</FormLabel>
-        <Flex>
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setEmailAvailable(false);
-            }}
-          />
-          <Button isDisabled={emailChecked} onClick={handleEmailCheck}>
-            중복확인
-          </Button>
-        </Flex>
-      </FormControl>
-      <Button
-        isDisabled={!emailChecked || !passwordChecked || !nickNameChecked}
-        colorScheme="purple"
-        onClick={onOpen}
-      >
-        수정
-      </Button>
+        </CardFooter>
+      </Card>
 
       {/* 수정 모달 */}
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -233,12 +252,12 @@ export function MemberEdit() {
 
           <ModalFooter>
             <Button onClick={onClose}>닫기</Button>
-            <Button onClick={handleSubmit} colorScheme="purple">
+            <Button onClick={handleSubmit} colorScheme="blue">
               수정
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Box>
+    </Center>
   );
 }
